@@ -1,60 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Books | Community Book Exchange</title>
-<link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add a Book | Community Book Exchange</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
+
 <header>
-<nav class="navbar">
-<h1 class="logo">📚 Community Book Exchange</h1>
-<ul class="nav-links">
-<li><a href="index.html">Home</a></li>
-<li><a href="books.html" class="active">Books</a></li>
-<li><a href="addbook.html">Add Book</a></li>
-<li><a href="about.html">About</a></li>
-<li><a href="login.html">Login</a></li>
-</ul>
-</nav>
+  <nav class="navbar">
+    <h1 class="logo">📚 Community Book Exchange</h1>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="books.html">Books</a></li>
+      <li><a href="addbook.html" class="active">Add Book</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
 </header>
 
-<section class="books-section">
-<h2>Available Books</h2>
-<div class="books-grid">
-<div class="book-card">
-<img src="assets/images/book1.jpg" alt="Book 1">
-<h3>The Alchemist</h3>
-<p>by Paulo Coelho</p>
-<button class="btn">Exchange</button>
-</div>
+<section class="form-container">
+  <h2>Add a Book</h2>
 
-<div class="book-card">
-<img src="assets/images/book2.jpg" alt="Book 2">
-<h3>Atomic Habits</h3>
-<p>by James Clear</p>
-<button class="btn">Exchange</button>
-</div>
+  <form class="book-form">
+    <label>Book Title</label>
+    <input type="text" placeholder="Enter book title" required>
 
-<div class="book-card">
-<img src="assets/images/book3.jpg" alt="Book 3">
-<h3>1984</h3>
-<p>by George Orwell</p>
-<button class="btn">Exchange</button>
-</div>
+    <label>Author</label>
+    <input type="text" placeholder="Enter author name" required>
 
-<div class="book-card">
-<img src="assets/images/book4.jpg" alt="Book 4">
-<h3>Pride and Prejudice</h3>
-<p>by Jane Austen</p>
-<button class="btn">Exchange</button>
-</div>
-</div>
+    <label>Genre</label>
+    <input type="text" placeholder="e.g. Mystery, Fiction" required>
+
+    <label>Condition</label>
+    <select required>
+      <option>New</option>
+      <option>Good</option>
+      <option>Used</option>
+    </select>
+
+    <label>Description</label>
+    <textarea placeholder="Edition, notes, special features..."></textarea>
+
+    <label>Book Cover Image</label>
+    <input type="file">
+
+    <button type="submit" class="btn submit-btn">Submit Book</button>
+  </form>
 </section>
 
 <footer>
-<p>© 2025 Community Book Exchange | Created by Shabnam</p>
+  <p>© 2025 Community Book Exchange | Created by Shabnam</p>
 </footer>
+
 </body>
 </html>
