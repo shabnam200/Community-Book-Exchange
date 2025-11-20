@@ -48,8 +48,13 @@ text-decoration: underline;
 }
 
 /* HERO SECTION */
-.content {
-flex: 1; 
+.content,
+.books-section,
+.form-container,
+.register-container {
+    flex: 1; /* MAKE THE MAIN CONTENT GROW TO FILL SPACE */
+    width: 90%;
+    margin: 40px auto; /* Add margin for spacing */
 }
 
 .hero {
@@ -237,4 +242,215 @@ color: #555;
 
 .submit-btn:hover {
   background-color: #e76f51;
+}
+
+
+
+/*Register Form Styling */
+
+
+.register-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 90vh;
+      background: linear-gradient(135deg, #3a6ea5, #2b5d8a);
+      color: #fff;
+    }
+
+.register-box {
+      background-color: #ffffff;
+      color: #333;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+.register-box h2 {
+      color: #3a6ea5;
+      margin-bottom: 20px;
+    }
+
+.register-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+.register-box input:focus {
+      border-color: #3a6ea5;
+      outline: none;
+    }
+
+.register-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #3a6ea5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+.register-box button:hover {
+      background-color: #2b5d8a;
+    }
+
+    .register-box p {
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+.register-box a {
+      color: #3a6ea5;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+.register-box a:hover {
+      text-decoration: underline;
+    }
+
+
+
+ /* Login Form Styling*/
+/* 
+ body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: url("assets/images/books-bg.jpg") center/cover no-repeat;
+      backdrop-filter: blur(5px);
+    } */
+
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 35px;
+      border-radius: 15px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+      animation: pop 0.3s ease-out;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #3a6ea5;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+
+    .login-box input:focus {
+      border-color: #3a6ea5;
+      outline: none;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #3a6ea5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 5px;
+    }
+
+    .login-box button:hover {
+      background-color: #2b5d8a;
+    }
+
+    .login-box p {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+
+    .login-box a {
+      color: #3a6ea5;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-box a:hover {
+      text-decoration: underline;
+    }
+
+    /* About Section Styling */
+.about-section {
+    width: 90%;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    flex: 1; /* Ensures it takes up space for the footer fix */
+}
+
+.about-section h2 {
+    color: #3a6ea5;
+    font-size: 2.2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.about-section h3 {
+    color: #f4a261;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+.about-section p {
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.about-section ul {
+    list-style-type: disc;
+    margin-left: 25px;
+    padding-left: 0;
+}
+
+.about-section li {
+    margin-bottom: 8px;
+    line-height: 1.5;
 }

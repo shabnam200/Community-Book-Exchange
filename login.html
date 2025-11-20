@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Community Book Exchange</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  
+</head>
+
+<body>
+
+  <header>
+    <nav class="navbar">
+      <h1 class="logo">📚 Community Book Exchange</h1>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="books.html">Books</a></li>
+        <li><a href="addbook.html">Add Book</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="login.html" class="active">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="login-overlay">
+    <div class="login-box">
+      <h2>Welcome Back</h2>
+      <form action="php/login.php" method="POST">
+        <input type="text" name="email" placeholder="Email or Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+
+      <p>Don’t have an account? <a href="register.html">Register here</a></p>
+    </div>
+  </div>
+<script src="assets/js/scripts.js"></script>
+</body>
+</html> 
+
+
