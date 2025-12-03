@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,11 +14,20 @@
 <nav class="navbar">
 <h1 class="logo">📚 Community Book Exchange</h1>
 <ul class="nav-links">
-<li><a href="index.html" class="active">Home</a></li>
-<li><a href="books.html">Books</a></li>
-<li><a href="addbook.html">Add Book</a></li>
-<li><a href="about.html">About</a></li>
-<li><a href="login.html">Login</a></li>
+<li><a href="index.php" class="active">Home</a></li>
+<li><a href="books.php">Books</a></li>
+<li><a href="addbook.php">Add Book</a></li>
+<li><a href="requests.php">Requests</a></li>
+<li><a href="about.php">About</a></li>
+<li>
+    <?php
+        if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+            echo '<a href="php/logout.php">Logout ('.$_SESSION["fullname"].')</a>';
+        } else {
+            echo '<a href="login.html">Login</a>';
+        }
+    ?>
+</li>
 </ul>
 </nav>
 </header>

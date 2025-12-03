@@ -9,8 +9,9 @@ color: #333;
 }
 
 body {
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* NAVBAR */
@@ -51,10 +52,10 @@ text-decoration: underline;
 .content,
 .books-section,
 .form-container,
-.register-container {
-    flex: 1; /* MAKE THE MAIN CONTENT GROW TO FILL SPACE */
-    width: 90%;
-    margin: 40px auto; /* Add margin for spacing */
+.about-section {
+  flex: 1; 
+  width: 90%;
+  margin: 40px auto; 
 }
 
 .hero {
@@ -322,13 +323,6 @@ color: #555;
 
 
  /* Login Form Styling*/
-/* 
- body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      background: url("assets/images/books-bg.jpg") center/cover no-repeat;
-      backdrop-filter: blur(5px);
-    } */
 
     .login-overlay {
       position: fixed;
@@ -421,7 +415,7 @@ color: #555;
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    flex: 1; /* Ensures it takes up space for the footer fix */
+    flex: 1; 
 }
 
 .about-section h2 {
@@ -453,4 +447,104 @@ color: #555;
 .about-section li {
     margin-bottom: 8px;
     line-height: 1.5;
+}
+
+/* request page */
+.requests-section {
+    flex: 1; 
+    padding: 40px 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto; 
+}
+
+.requests-section h2 {
+    text-align: center;
+    color: #3a6ea5;
+    margin-bottom: 30px;
+}
+
+.requests-section h3 {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    margin-top: 40px;
+    color: #f4a261;
+}
+
+.request-list-container {
+    margin-bottom: 20px; 
+    padding: 0 20px; 
+}
+
+.request-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.request-card h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1.1em;
+    flex-basis: 100%;
+}
+
+.request-card p {
+    margin: 0 15px 0 0;
+    color: #555;
+}
+
+.request-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.accept-btn {
+    background-color: #2a9d8f;
+}
+
+.accept-btn:hover {
+    background-color: #218376;
+}
+
+.reject-btn {
+    background-color: #e76f51;
+}
+
+.reject-btn:hover {
+    background-color: #d8573c;
+}
+
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+}
+
+.status-pending {
+    background-color: #f4a261;
+}
+
+.status-accepted {
+    background-color: #2a9d8f;
+}
+
+.status-rejected {
+    background-color: #e76f51;
+}
+
+.no-requests {
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+    background: #f1f1f1;
+    border-radius: 8px;
 }
