@@ -1,7 +1,9 @@
 **📚 Community Book Exchange Web App**
+
 A simple web-based platform where community members can list, borrow, and exchange books with each other.
 
 **🚀 Features**
+
 -User registration & login
 -Add, edit, and delete book listings
 -Search books by title or author
