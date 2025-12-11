@@ -12,8 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['request_id'], $_POST['
     $request_id = filter_var($_POST['request_id'], FILTER_VALIDATE_INT);
     $action = $_POST['action'];
     $user_id = $_SESSION['id'];
-    
-   
+    $success = false;
+
     if ($action === 'accept') {
         $new_status = 'accepted';
     } elseif ($action === 'reject') {
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['request_id'], $_POST['
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT owner_user_id FROM exchange_requests WHERE request_id = ?");
+    $stmt = $conn->prepare("SELECT owner_user_id, requested_book_id FROM exchange_requests WHERE request_id = ?");
     $stmt->bind_param("i", $request_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -35,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['request_id'], $_POST['
     
     $request_data = $result->fetch_assoc();
     $owner_id = $request_data['owner_user_id'];
+    $book_id = $request_data['requested_book_id'];
     $stmt->close();
 
     if ($owner_id != $user_id) {
@@ -42,16 +43,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['request_id'], $_POST['
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE exchange_requests SET status = ? WHERE request_id = ?");
-    $stmt->bind_param("si", $new_status, $request_id);
-    
-    if ($stmt->execute()) {
+    $conn->begin_transaction();
+
+    try {
+        $stmt_update_request = $conn->prepare("UPDATE exchange_requests SET status = ? WHERE request_id = ?");
+        $stmt_update_request->bind_param("si", $new_status, $request_id);
+        $stmt_update_request->execute();
+        $stmt_update_request->close();
+
+        if ($new_status === 'accepted') {
+            $stmt_update_book = $conn->prepare("UPDATE books SET is_available = GREATEST(0, is_available - 1) WHERE id = ?");
+            $stmt_update_book->bind_param("i", $book_id);
+            $stmt_update_book->execute();
+            $stmt_update_book->close();
+        }
+
+        $conn->commit();
         header("location: ../requests.php?success=" . $new_status);
-    } else {
+
+    } catch (Exception $e) {
+        $conn->rollback();
         header("location: ../requests.php?error=db_update_failed");
     }
     
-    $stmt->close();
     $conn->close();
     exit;
 } else {

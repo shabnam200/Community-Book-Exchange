@@ -38,23 +38,88 @@ function validateAddBookForm(event) {
     }
 
     if (!fileInput || fileInput.files.length === 0) {
-        alert("Please upload a book cover image.");
+        alert("A book cover image is required.");
+        event.preventDefault();
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const maxFileSize = 5 * 1024 * 1024; 
+
+    if (file.size > maxFileSize) {
+        alert("The image file size must not exceed 5MB.");
         event.preventDefault();
         return;
     }
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    
-    const registerForm = document.querySelector('.register-box form');
-    if (registerForm) {
-        registerForm.addEventListener('submit', validateRegistrationForm);
-    }
 
+document.addEventListener('DOMContentLoaded', function() {
+    
+    
+    const regForm = document.getElementById('registration-form');
+    if (regForm) {
+        regForm.addEventListener('submit', validateRegistrationForm);
+    }
     
     const addBookForm = document.querySelector('.book-form');
     if (addBookForm) {
         addBookForm.addEventListener('submit', validateAddBookForm);
     }
+
+    
+    const actionForms = document.querySelectorAll('.request-action-form');
+    actionForms.forEach(form => {
+        
+        form.addEventListener('click', function(e) {
+            const button = e.target.closest('button[data-action]');
+            if (!button) return; 
+
+            e.preventDefault();
+            
+            const action = button.getAttribute('data-action');
+            const requestId = form.querySelector('input[name="request_id"]').value;
+            
+            if (!confirm(`Are you sure you want to ${action} this request?`)) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('request_id', requestId);
+            formData.append('action', action);
+
+            
+            const allButtons = form.querySelectorAll('button');
+            allButtons.forEach(btn => btn.disabled = true);
+            button.textContent = 'Processing...';
+
+            fetch('php/handle_request.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(`Request ${action}ed successfully! The Requester's email is now available on the page.`);
+                    
+                    window.location.reload(); 
+                } else {
+                    alert('Error processing request: ' + (data.error || 'Unknown error.'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch Error:', error);
+                alert('An unexpected error occurred while processing the request.');
+                
+                allButtons.forEach(btn => btn.disabled = false);
+                button.textContent = action.charAt(0).toUpperCase() + action.slice(1);
+            });
+        });
+    });
 });

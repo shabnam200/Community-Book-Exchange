@@ -1,79 +1,102 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once 'php/db_config.php';
 
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: login.html");
-    exit;
+$pending_count = 0;
+if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+    $current_user_id = $_SESSION["id"];
+
+    $sql_count = "SELECT COUNT(*) AS pending_count FROM exchange_requests WHERE owner_user_id = ? AND status = 'pending'";
+
+    if ($stmt_count = $conn->prepare($sql_count)) {
+        $stmt_count->bind_param("i", $current_user_id);
+        $stmt_count->execute();
+        $result_count = $stmt_count->get_result();
+        $row_count = $result_count->fetch_assoc();
+        $pending_count = $row_count['pending_count'];
+        $stmt_count->close();
+    }
 }
+
+include 'header.php';
+
+$search_term = '';
+$search_condition = '';
+
+if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+    $search_term = trim($_GET['search']);
+    $search_condition = " AND (title LIKE ? OR author LIKE ?) ";
+    $param_value = '%' . $search_term . '%';
+}
+
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Books | Community Book Exchange</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <header>
-    <nav class="navbar">
-      <h1 class="logo">📚 Community Book Exchange</h1>
-      <ul class="nav-links">
-        <li><a href="index.php">Home</a></li>
-        <li><a href="books.php" class="active">Books</a></li>
-        <li><a href="addbook.php">Add Book</a></li>
-        <li><a href="requests.php">Requests</a></li>
-        <li><a href="about.php">About</a></li>
-        <li>
-          <?php
-            if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-                echo '<a href="php/logout.php">Logout ('.$_SESSION["fullname"].')</a>';
-            } else {
-                echo '<a href="login.html">Login</a>';
-            }
-          ?>
-        </li>
-      </ul>
-    </nav>
-  </header>
 
   <section class="books-section">
     <h2>Available Books</h2>
+    
+    <div class="search-container">
+        <form method="GET" action="books.php" class="book-search-form">
+            <input type="text" name="search" placeholder="Search by book title or author..." value="<?php echo htmlspecialchars($search_term); ?>">
+            <button type="submit" class="btn search-btn">Search</button>
+            <?php if (!empty($search_term)): ?>
+                <a href="books.php" class="btn reset-btn">Reset</a>
+            <?php endif; ?>
+        </form>
+    </div>
+
     <div class="books-grid">
       <?php
         
-        $sql = "SELECT id, title, author, condition_status, cover_image, owner_id FROM books ORDER BY created_at DESC";
-        $result = $conn->query($sql);
+        $sql = "SELECT 
+                    title, 
+                    author, 
+                    MIN(cover_image) AS cover_image, 
+                    SUM(is_available) AS total_available_copies,
+                    GROUP_CONCAT(DISTINCT condition_status) AS all_conditions 
+                FROM books 
+                WHERE is_available > 0 
+                {$search_condition} 
+                GROUP BY title, author
+                ORDER BY title ASC";
 
-        if ($result->num_rows > 0) {
+        if (!empty($search_condition)) {
+            if ($stmt = $conn->prepare($sql)) {
+                $stmt->bind_param("ss", $param_value, $param_value);
+                $stmt->execute();
+                $result = $stmt->get_result();
+            }
+        } else {
+            $result = $conn->query($sql);
+        }
+
+        if (isset($result) && $result->num_rows > 0) {
           while($row = $result->fetch_assoc()) {
-            $book_id = $row["id"];
             $book_title = htmlspecialchars($row["title"]);
             $book_author = htmlspecialchars($row["author"]);
-            $book_condition = htmlspecialchars($row["condition_status"]);
+            $available_copies = $row["total_available_copies"];
             $image_path = htmlspecialchars($row["cover_image"]);
-            $book_owner_id = $row["owner_id"];
+            $all_conditions = htmlspecialchars($row["all_conditions"]);
 
             echo '<div class="book-card">';
             echo '<img src="' . $image_path . '" alt="' . $book_title . ' Cover">';
             echo '<h3>' . $book_title . '</h3>';
             echo '<p>by ' . $book_author . '</p>';
-            echo '<p class="condition">Condition: ' . $book_condition . '</p>';
+            echo '<p class="condition">Conditions available: ' . $all_conditions . '</p>';
+            echo '<p class="copies-count">Available Copies: <strong>' . $available_copies . '</strong></p>';
 
-            if ($_SESSION["id"] == $book_owner_id) {
-                echo '<button class="btn owner-btn" disabled>Your Book</button>';
-            } else {
-                echo '<form method="POST" action="php/request_exchange.php" style="display:inline;">';
-                echo '<input type="hidden" name="book_id" value="' . $book_id . '">';
-                echo '<button type="submit" class="btn exchange-btn">Request Exchange</button>';
-                echo '</form>';
-            }
+            echo '<a href="book_detail.php?title=' . urlencode($book_title) . '&author=' . urlencode($book_author) . '" class="btn exchange-btn">View Copies (' . $available_copies . ')</a>';
             
             echo '</div>';
           }
         } else {
-          echo "<p class='no-books-msg'>No books have been added yet! Be the first one.</p>";
+          echo "<p class='no-books-msg'>No books found matching your criteria. Try a different search term.</p>";
+        }
+        
+        if (isset($stmt)) {
+            $stmt->close();
         }
         $conn->close();
       ?>
@@ -83,6 +106,5 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
   <footer>
     <p>© 2025 Community Book Exchange | Created by Shabnam</p>
   </footer>
-  <script src="assets/js/scripts.js"></script>
 </body>
 </html>

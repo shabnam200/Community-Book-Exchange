@@ -1,40 +1,30 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once 'php/db_config.php';
+
+$pending_count = 0;
+if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+    $current_user_id = $_SESSION["id"];
+
+    $sql_count = "SELECT COUNT(*) AS pending_count FROM exchange_requests WHERE owner_user_id = ? AND status = 'pending'";
+
+    if ($stmt_count = $conn->prepare($sql_count)) {
+        $stmt_count->bind_param("i", $current_user_id);
+        $stmt_count->execute();
+        $result_count = $stmt_count->get_result();
+        $row_count = $result_count->fetch_assoc();
+        $pending_count = $row_count['pending_count'];
+        $stmt_count->close();
+    }
+}
+
+include 'header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Us | Community Book Exchange</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
 
-  <header>
-    <nav class="navbar">
-      <h1 class="logo">📚 Community Book Exchange</h1>
-      <ul class="nav-links">
-        <li><a href="index.php">Home</a></li>
-        <li><a href="books.php">Books</a></li>
-        <li><a href="addbook.php">Add Book</a></li>
-        <li><a href="requests.php">Requests</a></li>
-        <li><a href="about.php" class="active">About</a></li>
-        <li>
-    <?php
-        if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-            echo '<a href="php/logout.php">Logout ('.$_SESSION["fullname"].')</a>';
-        } else {
-           
-            echo '<a href="login.html">Login</a>';
-        }
-    ?>
-</li>
-      </ul>
-    </nav>
-  </header>
-
-  <div class="content">
+<div class="content">
     <section class="about-section">
       <h2>Our Mission</h2>
       
@@ -61,6 +51,6 @@ session_start();
     <p>© 2025 Community Book Exchange | Created by Shabnam</p>
   </footer>
 
-  <script src="assets/js/scripts.js"></script> 
+  <script src="assets/js/main.js"></script>
 </body>
 </html>
