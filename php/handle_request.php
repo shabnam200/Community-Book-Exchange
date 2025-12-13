@@ -2,8 +2,10 @@
 session_start();
 require_once 'db_config.php';
 
+header('Content-Type: application/json');
+
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("location: ../login.html");
+    echo json_encode(["success" => false, "error" => "Unauthorized access. Please log in."]);
     exit;
 }
 
@@ -12,24 +14,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['request_id'], $_POST['
     $request_id = filter_var($_POST['request_id'], FILTER_VALIDATE_INT);
     $action = $_POST['action'];
     $user_id = $_SESSION['id'];
-    $success = false;
-
+    
     if ($action === 'accept') {
         $new_status = 'accepted';
     } elseif ($action === 'reject') {
         $new_status = 'rejected';
     } else {
-        header("location: ../requests.php?error=invalid_action");
+        echo json_encode(["success" => false, "error" => "Invalid action specified."]);
         exit;
     }
-
+    
+    
     $stmt = $conn->prepare("SELECT owner_user_id, requested_book_id FROM exchange_requests WHERE request_id = ?");
     $stmt->bind_param("i", $request_id);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        header("location: ../requests.php?error=request_not_found");
+        echo json_encode(["success" => false, "error" => "Request not found."]);
+        $stmt->close();
         exit;
     }
     
@@ -38,38 +41,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['request_id'], $_POST['
     $book_id = $request_data['requested_book_id'];
     $stmt->close();
 
+
     if ($owner_id != $user_id) {
-        header("location: ../requests.php?error=unauthorized");
+        echo json_encode(["success" => false, "error" => "Authorization failure. You do not own this request."]);
         exit;
     }
 
     $conn->begin_transaction();
 
     try {
-        $stmt_update_request = $conn->prepare("UPDATE exchange_requests SET status = ? WHERE request_id = ?");
-        $stmt_update_request->bind_param("si", $new_status, $request_id);
-        $stmt_update_request->execute();
+
+        $stmt_update_request = $conn->prepare("UPDATE exchange_requests SET status = ? WHERE request_id = ? AND owner_user_id = ?");
+        $stmt_update_request->bind_param("sii", $new_status, $request_id, $user_id);
+        
+        if (!$stmt_update_request->execute()) {
+             throw new Exception("Failed to update request status.");
+        }
         $stmt_update_request->close();
 
+        
         if ($new_status === 'accepted') {
-            $stmt_update_book = $conn->prepare("UPDATE books SET is_available = GREATEST(0, is_available - 1) WHERE id = ?");
-            $stmt_update_book->bind_param("i", $book_id);
-            $stmt_update_book->execute();
+            
+            $stmt_update_book = $conn->prepare("UPDATE books SET is_available = GREATEST(0, is_available - 1) WHERE id = ? AND owner_id = ?");
+            $stmt_update_book->bind_param("ii", $book_id, $user_id);
+            
+            if (!$stmt_update_book->execute()) {
+                throw new Exception("Failed to update book availability.");
+            }
             $stmt_update_book->close();
         }
 
         $conn->commit();
-        header("location: ../requests.php?success=" . $new_status);
+        echo json_encode(["success" => true, "message" => "Request successfully " . $new_status . "."]);
 
     } catch (Exception $e) {
         $conn->rollback();
-        header("location: ../requests.php?error=db_update_failed");
+        echo json_encode(["success" => false, "error" => "Database Transaction Failed. Contact support."]);
     }
     
     $conn->close();
     exit;
 } else {
-    header("location: ../requests.php");
+    echo json_encode(["success" => false, "error" => "Invalid request method."]);
     exit;
 }
 ?>

@@ -98,7 +98,6 @@ INSERT INTO `exchange_requests` (`request_id`, `requested_book_id`, `requester_u
 (8, 2, 1, 2, 'accepted', '2025-12-07 10:18:31');
 
 -- --------------------------------------------------------
-
 --
 -- Table structure for table `users`
 --
